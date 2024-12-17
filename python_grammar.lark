@@ -1,81 +1,82 @@
-start: stmt+
+start: (_NEWLINE | stmt)*
 
-?stmt: assign
-          | funcdef
-          | for_loop
-          | while_loop
-          | if_stmt
-          | import_stmt
-          | return_stmt
-          | break_stmt
-          | continue_stmt
-          | expr
+?stmt: compound_stmt | simple_stmt
 
-// assignments
-assign: (NAME ("," NAME)*) "=" (expr ("," expr)*)
-      | NAME augassign expr
+?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
+?small_stmt: (assign_stmt | expr)
 
-augassign: "+=" | "-=" | "*=" | "/=" | "//=" | "%="
+?compound_stmt: func_def
+    | if_stmt
+    | for_stmt
+    | while_stmt
 
-// functions
-funcdef: "def" NAME "(" [NAME ("," NAME)*] ")" ":" block
+assign_stmt: augassign | assign
+augassign: name augassign_op expr
+assign: name "=" expr
 
-return_stmt: "return" [expr]
+!augassign_op:
+    | "+="
+    | "-="
+    | "*="
+    | "/="
+    | "%="
 
-// imports
-import_stmt: "import" NAME
-           | "from" NAME "import" NAME
+expr: NAME
+    | NUMBER
+    | STRING
+    | expr "+" expr   -> add
+    | expr "-" expr   -> sub
+    | expr "*" expr   -> mul
+    | expr "/" expr   -> div
+    | expr "//" expr  -> floordiv
+    | expr "%" expr   -> mod
+    | "(" expr ")"
+    | list_expr
+    | func_call
+    | flow_stmt
 
-// loops, break, continue
-for_loop: "for" NAME "in" expr ":" block
-while_loop: "while" expr ":" block
+// data
+list_expr: "[" [expr ("," expr)*] "]"
+
+// loops
+for_stmt: "for" NAME "in" expr ":" block
+while_stmt: "while" expr ":" block
+
+// break, continue, return
+?flow_stmt: break_stmt | continue_stmt | return_stmt
 break_stmt: "break"
 continue_stmt: "continue"
+return_stmt: "return" [expr]
 
-// if, elif, else
-if_stmt: "if" expr ":" block elifs ["else" ":" block]
+// if and tests
+if_stmt: "if" test ":" block elifs ["else" ":" block]
 elifs: elif_*
-elif_: "elif" expr ":" block
+elif_: "elif" test ":" block
 
-// code block
-block: NEWLINE _INDENT stmt+ _DEDENT
+// functions
+func_def: "def" NAME "(" [params] "):" block
+func_call: NAME "(" [arguments] ")"
+params: name ("," name)*
+arguments: expr ("," expr)*
 
-// expressions
-?expr: NAME
-     | NUMBER
-     | STRING
-     | list_expr
-     | tuple_expr
-     | dict_expr
-     | func_call
-     | expr "+" expr   -> add
-     | expr "-" expr   -> sub
-     | expr "*" expr   -> mul
-     | expr "/" expr   -> div
-     | expr "//" expr  -> floordiv
-     | expr "%" expr   -> mod
-     | "(" expr ")"
-     | expr comp_op expr -> comparison
+?test: or_test ("if" or_test "else" test)?
+?or_test: and_test ("or" and_test)*
+?and_test: not_test_ ("and" not_test_)*
+?not_test_: "not" not_test_ -> not_test
+         | comparison
+?comparison: expr (comp_op expr)*
 
-// data structures
-list_expr: "[" [expr ("," expr)*] "]"
-tuple_expr: "(" [expr ("," expr)*] ")"
-dict_expr: "{" [pair ("," pair)*] "}"
-pair: expr ":" expr
+!comp_op: "<"|">"|"=="|">="|"<="|"<>"|"!="|"in"|"not" "in"|"is"|"is" "not"
 
-// function call
-func_call: NAME "(" [expr ("," expr)*] ")"
+block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
 
-// comparison
-comp_op: "<" | ">" | "==" | "!=" | "<=" | ">="
+!name: NAME
 
-// simple tokens
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+/
 STRING: /"([^"]*)"/
 
-// whitespace
-%import common.WS
-%ignore WS
-%import common.NEWLINE
+%import common.WS_INLINE
+%ignore WS_INLINE
+_NEWLINE: /(\r?\n[\t ]*)+/
 %declare _INDENT _DEDENT
