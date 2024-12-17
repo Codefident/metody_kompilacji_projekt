@@ -3,12 +3,11 @@ from lark.indenter import PythonIndenter
 
 # get grammar
 grammars_paths = {
-    "simple": "simple_grammar.lark",
     "normal": "python_grammar.lark",
     "full": "python.lark"
 }
 
-with open(grammars_paths["simple"], 'r') as grammar_file:
+with open(grammars_paths["normal"], 'r') as grammar_file:
     grammar = grammar_file.read()
 
 
