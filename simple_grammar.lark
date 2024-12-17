@@ -5,7 +5,10 @@ start: (_NEWLINE | stmt)*
 ?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
 ?small_stmt: (assign_stmt | expr)
 
-?compound_stmt: for_stmt | while_stmt | if_stmt
+?compound_stmt: func_def
+    | if_stmt
+    | for_stmt
+    | while_stmt
 
 assign_stmt: augassign | assign
 augassign: name augassign_op expr
@@ -29,6 +32,7 @@ expr: NAME
     | expr "%" expr   -> mod
     | "(" expr ")"
     | list_expr
+    | func_call
     | flow_stmt
 
 // data
@@ -48,6 +52,12 @@ return_stmt: "return" [expr]
 if_stmt: "if" test ":" block elifs ["else" ":" block]
 elifs: elif_*
 elif_: "elif" test ":" block
+
+// functions
+func_def: "def" NAME "(" [params] "):" block
+func_call: NAME "(" [arguments] ")"
+params: name ("," name)*
+arguments: expr ("," expr)*
 
 ?test: or_test ("if" or_test "else" test)?
 ?or_test: and_test ("or" and_test)*
