@@ -1,10 +1,10 @@
-start: statement+
+start: stmt+
 
-?statement: assign
+?stmt: assign
           | funcdef
           | for_loop
           | while_loop
-          | if_statement
+          | if_stmt
           | import_stmt
           | return_stmt
           | break_stmt
@@ -33,12 +33,12 @@ break_stmt: "break"
 continue_stmt: "continue"
 
 // if, elif, else
-if_statement: "if" expr ":" block
-            ("elif" expr ":" block)*
-            ["else" ":" block]
+if_stmt: "if" expr ":" block elifs ["else" ":" block]
+elifs: elif_*
+elif_: "elif" expr ":" block
 
 // code block
-block: NEWLINE INDENT statement+ DEDENT
+block: NEWLINE _INDENT stmt+ _DEDENT
 
 // expressions
 ?expr: NAME
@@ -78,5 +78,4 @@ STRING: /"([^"]*)"/
 %import common.WS
 %ignore WS
 %import common.NEWLINE
-%import common.INDENT
-%import common.DEDENT
+%declare _INDENT _DEDENT
