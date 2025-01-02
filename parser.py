@@ -22,6 +22,7 @@ parser = Lark(
 def parse_python(file_path: str):
     with open(file_path, 'r') as file:
         code = file.read()
+    code += "\n"
 
     print(f"Parsing {file_path}...")
     tree = parser.parse(code)
