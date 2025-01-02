@@ -4,29 +4,27 @@ from lark import Transformer, Tree
 class py_js_transformer(Transformer):
     def __init__(self):
         self.range_function = "function range(n) { return Array.from({ length: n }, (_, i) => i); }"
-
-    def _process_tree(self, tree):
-        """Pomocnicza metoda do przetwarzania węzłów Tree"""
-        if isinstance(tree, Tree):
-            transformer_method = getattr(self, tree.data, None)
-            if transformer_method:
-                return transformer_method(tree.children)
-            else:
-                raise ValueError(f"Nieobsługiwany węzeł: {tree.data}")
-        return tree
+        self.declared_vars = set()    
     
     def start(self, items):
         return f"{self.range_function}\n\n{'\n'.join(items)}"
 
     def simple_stmt(self, items):
         return "; ".join(items) + ";"
+    
+
+    # assignments (with augassigns)
 
     def assign_stmt(self, items):
         return "".join(items)
 
     def assign(self, items):
         var_name, value = items
-        return f"let {var_name} = {value};"
+        let = ""
+        if var_name not in self.declared_vars:
+            self.declared_vars.add(var_name)
+            let = "let "
+        return f"{let}{var_name} = {value};"
     
     def augassign(self, items):
         var_name, op, value = items
@@ -46,10 +44,16 @@ class py_js_transformer(Transformer):
     
     def aug_mod(self, _):
         return "%="
+    
+
+    # exprs and operators
 
     def expr(self, items):
         return " ".join(items)
 
+    def list_expr(self, items):
+        return f"[{', '.join(items)}]"
+    
     def add(self, items):
         return f"({items[0]} + {items[1]})"
 
@@ -67,9 +71,9 @@ class py_js_transformer(Transformer):
 
     def mod(self, items):
         return f"({items[0]} % {items[1]})"
+    
 
-    def list_expr(self, items):
-        return f"[{', '.join(items)}]"
+    # loops and flow
 
     def for_stmt(self, items):
         var_name, iterable, body = items
@@ -102,8 +106,6 @@ class py_js_transformer(Transformer):
 
     def elif_(self, items):
         condition, body = items
-        # if isinstance(body, Tree):
-        #     body = self._process_tree(body)
         return f" else if ({condition}) {{\n{body}\n}}"
     
     def else_(self, items):
@@ -117,6 +119,7 @@ class py_js_transformer(Transformer):
     
     def not_test(self, items):
         return f"!{''.join(items)}"
+
 
     # functions
 
@@ -135,12 +138,15 @@ class py_js_transformer(Transformer):
 
     def arguments(self, items):
         return items
+    
+
+    # indented block of code
 
     def block(self, items):
         return "\n".join(items)
 
 
-    # comparison
+    # comparisons
 
     def comparison(self, items):
         left, op, right = items
@@ -148,8 +154,6 @@ class py_js_transformer(Transformer):
 
     def comp_op(self, token):
         return token.value
-    
-    ## comparison operators
 
     def lower_than(self, _):
         return "<"
@@ -176,7 +180,7 @@ class py_js_transformer(Transformer):
         return "includes"
 
     def not_in_operator(self, _):
-        return "not in"
+        return "!includes"
 
     def is_operator(self, _):
         return "==="
