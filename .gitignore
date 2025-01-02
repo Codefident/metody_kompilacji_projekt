@@ -1,2 +1,3 @@
 full_python_grammar.lark
 .env
+__pycache__/

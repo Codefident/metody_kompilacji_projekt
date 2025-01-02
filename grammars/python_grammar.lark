@@ -5,21 +5,18 @@ start: (_NEWLINE | stmt)*
 ?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
 ?small_stmt: (assign_stmt | expr)
 
-?compound_stmt: func_def
-    | if_stmt
-    | for_stmt
-    | while_stmt
+?compound_stmt: func_def | if_stmt | for_stmt | while_stmt
 
 assign_stmt: augassign | assign
-augassign: name augassign_op expr
-assign: name "=" expr
+augassign: NAME augassign_op expr
+assign: NAME "=" expr
 
 !augassign_op:
-    | "+="
-    | "-="
-    | "*="
-    | "/="
-    | "%="
+    | "+=" -> aug_add
+    | "-=" -> aug_sub
+    | "*=" -> aug_mul
+    | "/=" -> aug_div
+    | "%=" -> aug_mod
 
 expr: NAME
     | NUMBER
@@ -40,7 +37,7 @@ list_expr: "[" [expr ("," expr)*] "]"
 
 // loops
 for_stmt: "for" NAME "in" expr ":" block
-while_stmt: "while" expr ":" block
+while_stmt: "while" test ":" block
 
 // break, continue, return
 ?flow_stmt: break_stmt | continue_stmt | return_stmt
@@ -49,14 +46,14 @@ continue_stmt: "continue"
 return_stmt: "return" [expr]
 
 // if and tests
-if_stmt: "if" test ":" block elifs ["else" ":" block]
-elifs: elif_*
+if_stmt: "if" test ":" block elif_* [else_]
 elif_: "elif" test ":" block
+else_: "else" ":" block
 
 // functions
-func_def: "def" NAME "(" [params] "):" block
+func_def: "def" NAME "(" [params] ")" ":" block
 func_call: NAME "(" [arguments] ")"
-params: name ("," name)*
+params: NAME ("," NAME)*
 arguments: expr ("," expr)*
 
 ?test: or_test ("if" or_test "else" test)?
@@ -66,7 +63,19 @@ arguments: expr ("," expr)*
          | comparison
 ?comparison: expr (comp_op expr)*
 
-!comp_op: "<"|">"|"=="|">="|"<="|"<>"|"!="|"in"|"not" "in"|"is"|"is" "not"
+!comp_op:
+    | "<"     -> lower_than
+    | ">"     -> greater_than
+    | "=="    -> equals
+    | ">="    -> greater_or_equals
+    | "<="    -> lower_or_equals
+    | "<>"    -> not_equals_legacy
+    | "!="    -> not_equals
+    | "in"    -> in_operator
+    | "not" "in" -> not_in_operator
+    | "is"    -> is_operator
+    | "is" "not" -> is_not_operator
+
 
 block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
 
@@ -75,8 +84,10 @@ block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+/
 STRING: /"([^"]*)"/
+COMMENT: /#[^\n]*/
 
 %import common.WS_INLINE
 %ignore WS_INLINE
-_NEWLINE: /(\r?\n[\t ]*)+/
+//_NEWLINE: /(\r?\n[\t ]*)+/
+_NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
 %declare _INDENT _DEDENT

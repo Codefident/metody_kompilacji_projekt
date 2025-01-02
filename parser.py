@@ -1,35 +1,29 @@
-from lark import Lark
+from lark import Lark, Transformer
 from lark.indenter import PythonIndenter
 
-# get grammar
+
 grammars_paths = {
-    "normal": "python_grammar.lark",
-    "full": "python.lark"
+    "simple": "grammars/python_simple_grammar.lark",
+    "normal": "grammars/python_grammar.lark",
+    "full": "grammars/full_python_grammar.lark"
 }
-
-with open(grammars_paths["normal"], 'r') as grammar_file:
-    grammar = grammar_file.read()
-
-
-# create parser
-parser = Lark(
-    grammar=grammar,
-    parser="lalr",
-    postlex=PythonIndenter()
-)
 
 
 def parse_python(file_path: str):
+
+    # get grammar
+    with open(grammars_paths["normal"], 'r') as grammar_file:
+        grammar = grammar_file.read()
+
+    # create parser
+    parser = Lark(
+        grammar=grammar,
+        parser="lalr",
+        postlex=PythonIndenter()
+    )
+
     with open(file_path, 'r') as file:
         code = file.read()
     code += "\n"
 
-    print(f"Parsing {file_path}...")
-    tree = parser.parse(code)
-
-    print("Result:")
-    print(tree.pretty())
-
-
-path = "examples/example0.py"
-parse_python(path)
+    return parser.parse(code)
