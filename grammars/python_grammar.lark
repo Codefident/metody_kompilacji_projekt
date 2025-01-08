@@ -19,15 +19,18 @@ assign_target: NAME | dot_access | index_access
     | "/=" -> aug_div
     | "%=" -> aug_mod
 
-expr: NAME
-    | NUMBER
-    | STRING
+expr: atom_expr
     | expr "+" expr   -> add
     | expr "-" expr   -> sub
     | expr "*" expr   -> mul
     | expr "/" expr   -> div
     | expr "//" expr  -> floordiv
     | expr "%" expr   -> mod
+
+atom_expr: NAME
+    | NUMBER
+    | STRING
+    | "-" NUMBER    -> negative_number
     | "(" expr ")"
     | obj_expr
     | list_expr
@@ -37,9 +40,9 @@ expr: NAME
     | flow_stmt
 
 // data
-obj_expr: "{" [obj_item ("," obj_item)*] "}"
+obj_expr: "{}" | "{" [obj_item ("," obj_item)*] "}"
 obj_item: "\"" NAME "\"" ":" expr
-list_expr: "[" [expr ("," expr)*] "]"
+list_expr: "[]" | "[" [expr ("," expr)*] "]"
 index_access: expr "[" expr "]"
 dot_access: expr "." expr
 

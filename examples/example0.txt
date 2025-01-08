@@ -1,7 +1,0 @@
-a = 2
-b = 3
-my_list = [a, b]
-c = a + b
-
-for elem in my_list:
-    continue

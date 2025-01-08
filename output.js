@@ -19,15 +19,31 @@ let range = (start, stop, step) => {
 }
 let len = (arr) => arr.length
 
-let a = 2;
-let b = 3;
-let my_list = [1, 2, 3, 4, 5, 6];
-let my_obj = {a: 2, b: 10};
-let c = (a + b);
-console.log(my_list[(a - 1)])
-console.log("dlugosc_listy")
-console.log(len(my_list))
-console.log("my_obj")
-console.log(my_obj["b"])
-my_list.push(70)
-console.log(my_list)
+// user code
+let T = [5, 1, 2, 8, 7, 6, 3, 9, 1, 1, 8, 7, 7, 1, 3, 3, 2];
+function countingSort(T, k) {
+let n = len(T);
+let C = [];
+for (let _ of range(k)) {
+C.push(0)
+}
+let B = [];
+for (let _ of range(n)) {
+B.push(0)
+}
+for (let x of T) {
+C[x] += 1;
+}
+for (let i of range(1, k)) {
+C[i] = (C[i] + C[(i - 1)]);
+}
+for (let i of range((n - 1), -1, -1)) {
+B[(C[T[i]] - 1)] = T[i];
+C[T[i]] -= 1;
+}
+for (let i of range(n)) {
+T[i] = B[i];
+}
+}
+countingSort(T, 10)
+console.log(T)

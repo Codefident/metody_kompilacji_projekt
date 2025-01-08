@@ -6,13 +6,15 @@ hello("Hello everyone from a function!")
 a = 0
 
 print(a)
-for i in range(10):
+for _ in range(10):
     if a % 2 == 0:
         print("a jest parzyste")
     else:
         print("a jest nieparzyste")
     a += 1
 print(a)
+
+a = 11
 
 while a > 0:
     a -= 1

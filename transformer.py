@@ -1,9 +1,10 @@
 from lark import Transformer
+import re
 
 
 class Py_JS_Transformer(Transformer):
     def __init__(self):
-        self.range_function = """let range = (start, stop, step) => {
+        self.functions = """let range = (start, stop, step) => {
     if (stop === undefined) {
         stop = start;
         start = 0;
@@ -21,12 +22,14 @@ class Py_JS_Transformer(Transformer):
     for (let i = start; step > 0 ? i < stop : i > stop; i += step)
         result.push(i);
     return result;
-}"""
-        self.len_function = "let len = (arr) => arr.length"
+}
+let len = (arr) => arr.length
+
+// user code"""
         self.declared_vars = set()    
     
     def start(self, items):
-        return f"{self.range_function}\n{self.len_function}\n\n{'\n'.join(items)}"
+        return f"{self.functions}\n{'\n'.join(items)}"
 
     def simple_stmt(self, items):
         return "; ".join(items) + ";"
@@ -40,7 +43,7 @@ class Py_JS_Transformer(Transformer):
     def assign(self, items):
         var_name, value = items
         let = ""
-        if var_name not in self.declared_vars:
+        if var_name not in self.declared_vars and re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", var_name):
             self.declared_vars.add(var_name)
             let = "let "
         return f"{let}{var_name} = {value};"
@@ -72,6 +75,12 @@ class Py_JS_Transformer(Transformer):
 
     def expr(self, items):
         return " ".join(items)
+    
+    def atom_expr(self, items):
+        return "".join(items)
+    
+    def negative_number(self, items):
+        return f"-{items[0]}"
     
     def obj_expr(self, items):
         return f"{{{', '.join(items)}}}"
@@ -168,6 +177,8 @@ class Py_JS_Transformer(Transformer):
                 func_name = "console.log"
             case "append":
                 func_name = "push"
+            case "int":
+                func_name = "parseInt"
         
         return f"{func_name}({', '.join(args)})"
 
