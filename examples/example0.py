@@ -1,17 +1,19 @@
 a = 2
 b = 3
-my_list = [a, b]
+my_list = [
+    1,
+    2, 3, 4, 5, 6]
+my_obj = {
+    "a": 2, 
+    "b": 10
+}
 c = a + b
 
-# ponizej jest petla for
+print(my_list[a - 1])
+print("dlugosc_listy")
+print(len(my_list))
+print("my_obj")
+print(my_obj["b"])
 
-for elem in range(10):
-    if elem or False:
-        continue
-    elif not elem:
-        c += 1
-    elif True and elem:
-        continue
-    else:
-        a *= b
-yo = "str"
+my_list.append(70)
+print(my_list)

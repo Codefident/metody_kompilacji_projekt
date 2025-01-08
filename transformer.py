@@ -3,32 +3,30 @@ from lark import Transformer
 
 class Py_JS_Transformer(Transformer):
     def __init__(self):
-        self.range_function = """function range(start, stop, step) {
-    if (typeof stop == 'undefined') {
+        self.range_function = """let range = (start, stop, step) => {
+    if (stop === undefined) {
         stop = start;
         start = 0;
     }
 
-    if (typeof step == 'undefined') {
+    if (step === undefined)
         step = 1;
-    }
+    else if (step == 0)
+        throw new Error("step cannot be 0");
 
-    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+    if ((step > 0 && start >= stop) || (step < 0 && start <= stop))
         return [];
-    }
 
     let result = [];
-    for (let i = start; step > 0 ? i < stop : i > stop; i += step) {
+    for (let i = start; step > 0 ? i < stop : i > stop; i += step)
         result.push(i);
-    }
-
     return result;
-};"""
+}"""
         self.len_function = "let len = (arr) => arr.length"
         self.declared_vars = set()    
     
     def start(self, items):
-        return f"{self.range_function}\n\n{self.len_function}\n\n{'\n'.join(items)}"
+        return f"{self.range_function}\n{self.len_function}\n\n{'\n'.join(items)}"
 
     def simple_stmt(self, items):
         return "; ".join(items) + ";"
@@ -50,6 +48,9 @@ class Py_JS_Transformer(Transformer):
     def augassign(self, items):
         var_name, op, value = items
         return f"{var_name} {op} {value};"
+    
+    def assign_target(self, items):
+        return "".join(items)
 
     def aug_add(self, _):
         return "+="
@@ -71,9 +72,21 @@ class Py_JS_Transformer(Transformer):
 
     def expr(self, items):
         return " ".join(items)
+    
+    def obj_expr(self, items):
+        return f"{{{', '.join(items)}}}"
+    
+    def obj_item(self, items):
+        return f"{items[0]}: {items[1]}"
 
     def list_expr(self, items):
         return f"[{', '.join(items)}]"
+    
+    def index_access(self, items):
+        return f"{items[0]}[{items[1]}]"
+    
+    def dot_access(self, items):
+        return f"{items[0]}.{items[1]}"
     
     def add(self, items):
         return f"({items[0]} + {items[1]})"
@@ -150,8 +163,12 @@ class Py_JS_Transformer(Transformer):
 
     def func_call(self, items):
         func_name, args = items
-        if func_name == "print":
-            func_name = "console.log"
+        match func_name:
+            case "print":
+                func_name = "console.log"
+            case "append":
+                func_name = "push"
+        
         return f"{func_name}({', '.join(args)})"
 
     def params(self, items):

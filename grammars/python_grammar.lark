@@ -8,11 +8,12 @@ start: (_NEWLINE | stmt)*
 ?compound_stmt: func_def | if_stmt | for_stmt | while_stmt
 
 assign_stmt: augassign | assign
-augassign: NAME augassign_op expr
-assign: NAME "=" expr
+augassign: assign_target augassign_op expr
+assign: assign_target "=" expr
 
-!augassign_op:
-    | "+=" -> aug_add
+assign_target: NAME | dot_access | index_access
+
+!augassign_op: "+=" -> aug_add
     | "-=" -> aug_sub
     | "*=" -> aug_mul
     | "/=" -> aug_div
@@ -28,12 +29,19 @@ expr: NAME
     | expr "//" expr  -> floordiv
     | expr "%" expr   -> mod
     | "(" expr ")"
+    | obj_expr
     | list_expr
     | func_call
+    | dot_access
+    | index_access
     | flow_stmt
 
 // data
+obj_expr: "{" [obj_item ("," obj_item)*] "}"
+obj_item: "\"" NAME "\"" ":" expr
 list_expr: "[" [expr ("," expr)*] "]"
+index_access: expr "[" expr "]"
+dot_access: expr "." expr
 
 // loops
 for_stmt: "for" NAME "in" expr ":" block
@@ -76,10 +84,7 @@ arguments: expr ("," expr)*
     | "is"    -> is_operator
     | "is" "not" -> is_not_operator
 
-
 block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
-
-!name: NAME
 
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+/
