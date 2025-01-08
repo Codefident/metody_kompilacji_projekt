@@ -1,13 +1,34 @@
-from lark import Transformer, Tree
+from lark import Transformer
 
 
-class py_js_transformer(Transformer):
+class Py_JS_Transformer(Transformer):
     def __init__(self):
-        self.range_function = "function range(n) { return Array.from({ length: n }, (_, i) => i); }"
+        self.range_function = """function range(start, stop, step) {
+    if (typeof stop == 'undefined') {
+        stop = start;
+        start = 0;
+    }
+
+    if (typeof step == 'undefined') {
+        step = 1;
+    }
+
+    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+        return [];
+    }
+
+    let result = [];
+    for (let i = start; step > 0 ? i < stop : i > stop; i += step) {
+        result.push(i);
+    }
+
+    return result;
+};"""
+        self.len_function = "let len = (arr) => arr.length"
         self.declared_vars = set()    
     
     def start(self, items):
-        return f"{self.range_function}\n\n{'\n'.join(items)}"
+        return f"{self.range_function}\n\n{self.len_function}\n\n{'\n'.join(items)}"
 
     def simple_stmt(self, items):
         return "; ".join(items) + ";"
@@ -209,5 +230,4 @@ class py_js_transformer(Transformer):
         return token.value
     
     def COMMENT(self, token):
-        print("COMMENT")
         return f"//{token}"

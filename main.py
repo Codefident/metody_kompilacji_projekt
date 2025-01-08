@@ -1,18 +1,17 @@
 from parser import parse_python
-from transformer import py_js_transformer
+from transformer import Py_JS_Transformer
 
 
-input_file_path = "examples/is_prime.py"
+input_file_path = "examples/example0.py"
 
 tree = parse_python(input_file_path)
 print(tree.pretty())
-print()
 # gen = tree.iter_subtrees_topdown()
 # for cos in gen:
 #     print(cos)
 #     print()
 
-transformer = py_js_transformer()
+transformer = Py_JS_Transformer()
 js_code = transformer.transform(tree)
 print()
 print(js_code)
