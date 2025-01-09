@@ -23,7 +23,14 @@ class Py_JS_Transformer(Transformer):
         result.push(i);
     return result;
 }
-let len = (arr) => arr.length
+
+let len = (obj) => {
+    if (typeof obj === "string" || Array.isArray(obj))
+        return obj.length
+    if (typeof obj === "object")
+        return Object.keys(obj).length
+    return 0
+}
 
 // user code"""
         self.declared_vars = set()    
