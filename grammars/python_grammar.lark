@@ -63,7 +63,7 @@ else_: "else" ":" block
 
 // functions
 func_def: "def" NAME "(" [params] ")" ":" block
-func_call: NAME "(" [arguments] ")"
+func_call: (NAME | dot_access | index_access) "(" [arguments] ")"
 params: NAME ("," NAME)*
 arguments: expr ("," expr)*
 
