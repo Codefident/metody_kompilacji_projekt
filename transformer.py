@@ -175,10 +175,15 @@ let len = (obj) => {
 
     def func_def(self, items):
         func_name, params, body = items
+        if params is None:
+            params = []
         return f"function {func_name}({', '.join(params)}) {{\n{body}\n}}"
 
     def func_call(self, items):
         func_name, args = items
+        if args is None:
+            args = []
+
         match func_name:
             case "print":
                 func_name = "console.log"
