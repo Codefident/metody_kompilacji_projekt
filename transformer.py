@@ -86,8 +86,8 @@ let len = (obj) => {
     def atom_expr(self, items):
         return "".join(items)
     
-    def negative_number(self, items):
-        return f"-{items[0]}"
+    def atom(self, items):
+        return "".join(items)
     
     def obj_expr(self, items):
         return f"{{{', '.join(items)}}}"
@@ -121,6 +121,9 @@ let len = (obj) => {
 
     def mod(self, items):
         return f"({items[0]} % {items[1]})"
+    
+    def pow(self, items):
+        return f"Math.pow({items[0]}, {items[1]})"
     
 
     # loops and flow
@@ -180,19 +183,21 @@ let len = (obj) => {
         return f"function {func_name}({', '.join(params)}) {{\n{body}\n}}"
 
     def func_call(self, items):
-        func_name, args = items
+        full_func_name, args = items
         if args is None:
             args = []
 
-        match func_name:
+        names: list = full_func_name.split(".")
+
+        match names[-1]:
             case "print":
-                func_name = "console.log"
+                names[-1] = "console.log"
             case "append":
-                func_name = "push"
+                names[-1] = "push"
             case "int":
-                func_name = "parseInt"
+                names[-1] = "parseInt"
         
-        return f"{func_name}({', '.join(args)})"
+        return f"{'.'.join(names)}({', '.join(args)})"
 
     def params(self, items):
         return items

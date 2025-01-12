@@ -4,7 +4,7 @@ from colorama import Fore, Back, Style
 
 
 grammars_paths = {
-    "simple": "grammars/python_simple_grammar.lark",
+    "prev": "grammars/prev_python_grammar.lark",
     "normal": "grammars/python_grammar.lark",
     "full": "grammars/full_python_grammar.lark"
 }

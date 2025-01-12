@@ -1,0 +1,36 @@
+test_cases = [
+    # positive
+    ("1 + 0.4", True),
+    ("1.3 - 2", True),
+    ("1 + -2", True),
+    ("1 * 2.3", True),
+    ("6 / 3", True),
+    ("7 // 2", True),
+    ("7 ** 2", True),
+    ("a = 20 * 5", True),
+    ("b += 20 * 5", True),
+    ("-5 * (3 + 7)", True),
+    ("4.5 / 1.5", True),
+    ("{ \"key\": 42 }", True),
+    ("[1, 2, 3]", True),
+    ("obj.property", True),
+    ("obj[\"prop\"]", True),
+    ("array[0]", True),
+    ("nested.obj.method()", True),
+    ("if x > 0: print(x, y, z)", True),
+    ("def my_function(a, b): return a + b", True),
+    ("for elem in arr: print(elem)", True),
+    ("for i in range(len(arr)): arr[i] = i", True),
+
+    # negative
+    ("10.method()", False),
+    ("3.property", False),
+    ("5.5.func", False),
+    ("2[]", False),
+    ("[1, 2][,]", False),
+    ("(3 + ).value", False),
+    ("nested.obj[].key", False),
+    ("def (): pass", False),
+    ("func(,)", False),
+    ("break = 3", False)
+]

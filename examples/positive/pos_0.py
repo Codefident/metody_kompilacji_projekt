@@ -8,6 +8,8 @@ my_obj = {
     "b": -10
 }
 c = a + b
+d = 2 ** 8
+print(d)
 
 print(my_list[a - 1])
 print("dlugosc_listy")

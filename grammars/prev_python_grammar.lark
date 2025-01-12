@@ -3,13 +3,15 @@ start: (_NEWLINE | stmt)*
 ?stmt: compound_stmt | simple_stmt
 
 ?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
-?small_stmt: (assign_stmt | flow_stmt | expr)
+?small_stmt: (assign_stmt | expr)
 
 ?compound_stmt: func_def | if_stmt | for_stmt | while_stmt
 
 assign_stmt: augassign | assign
-augassign: atom_expr augassign_op expr
-assign: atom_expr "=" expr
+augassign: assign_target augassign_op expr
+assign: assign_target "=" expr
+
+assign_target: NAME | dot_access | index_access
 
 !augassign_op: "+=" -> aug_add
     | "-=" -> aug_sub
@@ -17,33 +19,32 @@ assign: atom_expr "=" expr
     | "/=" -> aug_div
     | "%=" -> aug_mod
 
-expr: expr "+" expr   -> add
+expr: atom_expr
+    | expr "+" expr   -> add
     | expr "-" expr   -> sub
     | expr "*" expr   -> mul
     | expr "/" expr   -> div
     | expr "//" expr  -> floordiv
     | expr "%" expr   -> mod
-    | expr "**" expr  -> pow
-    | atom_expr
 
-atom_expr: atom_expr "(" [arguments] ")"    -> func_call
-    | atom_expr "[" expr "]"    -> index_access
-    | atom_expr "." NAME        -> dot_access
-    | atom
-
-atom: NAME
+atom_expr: NAME
     | NUMBER
     | STRING
+    | "-" NUMBER    -> negative_number
     | "(" expr ")"
-    | list_expr
     | obj_expr
-    
+    | list_expr
+    | func_call
+    | dot_access
+    | index_access
+    | flow_stmt
 
 // data
 obj_expr: "{}" | "{" [obj_item ("," obj_item)*] "}"
 obj_item: "\"" NAME "\"" ":" expr
 list_expr: "[]" | "[" [expr ("," expr)*] "]"
-
+index_access: expr "[" expr "]"
+dot_access: expr "." expr
 
 // loops
 for_stmt: "for" NAME "in" expr ":" block
@@ -62,6 +63,7 @@ else_: "else" ":" block
 
 // functions
 func_def: "def" NAME "(" [params] ")" ":" block
+func_call: (NAME | dot_access | index_access) "(" [arguments] ")"
 params: NAME ("," NAME)*
 arguments: expr ("," expr)*
 
@@ -88,7 +90,7 @@ arguments: expr ("," expr)*
 block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
 
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
-NUMBER.2: /-?\d+(\.\d+)?/
+NUMBER: /\d+/
 STRING: /"([^"]*)"/
 COMMENT: /#[^\n]*/
 
