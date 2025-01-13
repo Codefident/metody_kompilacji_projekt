@@ -14,7 +14,9 @@ test_cases = [
     ("{ \"key\": 42 }", True),
     ("[1, 2, 3]", True),
     ("obj.property", True),
+    ("obj.property = 12", True),
     ("obj[\"prop\"]", True),
+    ("obj[\"prop\"] = \"some_str\"", True),
     ("array[0]", True),
     ("nested.obj.method()", True),
     ("if x > 0: print(x, y, z)", True),
@@ -32,5 +34,7 @@ test_cases = [
     ("nested.obj[].key", False),
     ("def (): pass", False),
     ("func(,)", False),
-    ("break = 3", False)
+    ("break = 3", False),
+    ("3 = 5", False),
+    ("\"s\" = obj.prop", False)
 ]

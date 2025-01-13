@@ -8,8 +8,10 @@ start: (_NEWLINE | stmt)*
 ?compound_stmt: func_def | if_stmt | for_stmt | while_stmt
 
 assign_stmt: augassign | assign
-augassign: atom_expr augassign_op expr
-assign: atom_expr "=" expr
+augassign: assign_target augassign_op expr
+assign: assign_target "=" expr
+
+assign_target: NAME | dot_access | index_access
 
 !augassign_op: "+=" -> aug_add
     | "-=" -> aug_sub
@@ -24,15 +26,15 @@ expr: expr "+" expr   -> add
     | expr "//" expr  -> floordiv
     | expr "%" expr   -> mod
     | expr "**" expr  -> pow
+    | NUMBER    // previously in atom, moved to expr to prevent using numbers in dot access
     | atom_expr
 
-atom_expr: atom_expr "(" [arguments] ")"    -> func_call
-    | atom_expr "[" expr "]"    -> index_access
-    | atom_expr "." NAME        -> dot_access
+atom_expr: func_call
+    | index_access
+    | dot_access
     | atom
 
 atom: NAME
-    | NUMBER
     | STRING
     | "(" expr ")"
     | "True"    -> true_
@@ -46,7 +48,9 @@ atom: NAME
 obj_expr: "{}" | "{" [obj_item ("," obj_item)*] "}"
 obj_item: "\"" NAME "\"" ":" expr
 list_expr: "[]" | "[" [expr ("," expr)*] "]"
-
+func_call: atom_expr "(" [arguments] ")"
+index_access: atom_expr "[" expr "]"
+dot_access: atom_expr "." NAME
 
 // loops
 for_stmt: "for" NAME "in" expr ":" block
