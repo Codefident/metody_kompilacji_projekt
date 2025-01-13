@@ -35,6 +35,9 @@ atom: NAME
     | NUMBER
     | STRING
     | "(" expr ")"
+    | "True"    -> true_
+    | "False"   -> false_
+    | "None"    -> none_
     | list_expr
     | obj_expr
     

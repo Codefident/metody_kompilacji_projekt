@@ -89,6 +89,15 @@ let len = (obj) => {
     def atom(self, items):
         return "".join(items)
     
+    def true_(self, _):
+        return "true"
+    
+    def false_(self, _):
+        return "false"
+    
+    def none_(self, _):
+        return "null"
+    
     def obj_expr(self, items):
         return f"{{{', '.join(items)}}}"
     
@@ -258,15 +267,7 @@ let len = (obj) => {
     # other tokens
 
     def NAME(self, token):
-        value = token.value
-        match token.value:
-            case "True":
-                value = "true"
-            case "False":
-                value = "false"
-            case "None":
-                value = "null"
-        return value
+        return token.value
 
     def NUMBER(self, token):
         return token.value
