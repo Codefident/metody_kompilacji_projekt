@@ -1,19 +1,12 @@
 from lark import Lark, exceptions
 from lark.indenter import PythonIndenter
-from colorama import Fore, Back, Style
-
-
-grammars_paths = {
-    "prev": "grammars/prev_python_grammar.lark",
-    "normal": "grammars/python_grammar.lark",
-    "full": "grammars/full_python_grammar.lark"
-}
+from colorama import Fore, Style
 
 
 def parse_python(file_path: str):
 
     # get grammar
-    with open(grammars_paths["normal"], 'r') as grammar_file:
+    with open("python_grammar.lark", 'r') as grammar_file:
         grammar = grammar_file.read()
 
     # create parser
