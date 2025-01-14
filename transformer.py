@@ -164,6 +164,13 @@ let len = (obj) => {
             if rest[i] is None:
                 rest[i] = ''
 
+        if "includes" in condition:
+            var, test, obj = condition.split(" ")
+            if test == "includes":
+                return f"if ({obj}.includes({var})) {{\n{body}\n}}{''.join(rest)}"
+            else:
+                return f"if (!{obj}.includes({var})) {{\n{body}\n}}{''.join(rest)}"
+
         return f"if ({condition}) {{\n{body}\n}}{''.join(rest)}"
 
     def elif_(self, items):
