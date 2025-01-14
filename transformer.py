@@ -139,6 +139,28 @@ let len = (obj) => {
 
     def for_stmt(self, items):
         var_name, iterable, body = items
+        if "range(" == iterable[:6]:
+            args = iterable[6:-1].split(",")
+            args = [arg.strip() for arg in args]
+            proceed = True
+            for arg in args:
+                if ")" in arg or "(" in arg:
+                    proceed = False
+                    break
+            if len(args) > 3:
+                proceed = False
+            if proceed:
+                match len(args):
+                    case 1:
+                        return f"for (let {var_name} = 0; {var_name} < {args[0]}; {var_name}++) {{\n{body}\n}}"
+                    case 2:
+                        return f"for (let {var_name} = {args[0]}; {var_name} < {args[1]}; {var_name}++) {{\n{body}\n}}"
+                    case 3:
+                        if int(args[2]) > 0:
+                            comp = "<"
+                        else:
+                            comp = ">"
+                        return f"for (let {var_name} = {args[0]}; {var_name} {comp} {args[1]}; {var_name} += {args[2]}) {{\n{body}\n}}"
         return f"for (let {var_name} of {iterable}) {{\n{body}\n}}"
 
     def while_stmt(self, items):
@@ -196,7 +218,7 @@ let len = (obj) => {
         func_name, params, body = items
         if params is None:
             params = []
-        return f"function {func_name}({', '.join(params)}) {{\n{body}\n}}"
+        return f"let {func_name} = ({', '.join(params)}) => {{\n{body}\n}}"
 
     def func_call(self, items):
         full_func_name, args = items
@@ -212,6 +234,8 @@ let len = (obj) => {
                 names[-1] = "push"
             case "int":
                 names[-1] = "parseInt"
+            case "float":
+                names[-1] = "parseFloat"
         
         return f"{'.'.join(names)}({', '.join(args)})"
 
@@ -278,6 +302,9 @@ let len = (obj) => {
 
     def NUMBER(self, token):
         return token.value
+    
+    def negative_number(self, items):
+        return f"-{items[0]}"
 
     def STRING(self, token):
         return token.value

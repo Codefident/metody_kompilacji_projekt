@@ -32,7 +32,7 @@ let b = -3;
 let c = (a + b);
 let d = Math.pow(2, 8);
 console.log(d)
-let my_list = [1, 2, 3, 4, 5, 6];
+let my_list = [1, 1, 1, 1, 1, 1];
 let my_obj = {a: 2, b: -10};
 let nothing = null;
 let true_val = true;
@@ -40,6 +40,9 @@ let false_val = false;
 if (nothing === null) {
 console.log("printing nothing")
 console.log(nothing)
+}
+for (let i of range(len(my_list))) {
+my_list[i] = (i + 1);
 }
 console.log(my_list[(a - 1)])
 console.log("dlugosc_listy")

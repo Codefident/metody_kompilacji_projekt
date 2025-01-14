@@ -2,6 +2,7 @@ test_cases = [
     # positive
     ("1 + 0.4", True),
     ("1.3 - 2", True),
+    ("a-2", True),
     ("1 + -2", True),
     ("1 * 2.3", True),
     ("6 / 3", True),
@@ -18,6 +19,8 @@ test_cases = [
     ("obj[\"prop\"]", True),
     ("obj[\"prop\"] = \"some_str\"", True),
     ("array[0]", True),
+    ("array[-3]", True),
+    ("array[a-3]", True),
     ("nested.obj.method()", True),
     ("if x > 0: print(x, y, z)", True),
     ("def my_function(a, b): return a + b", True),
@@ -35,6 +38,7 @@ test_cases = [
     ("def (): pass", False),
     ("func(,)", False),
     ("break = 3", False),
+    ("True = \"prawda\"", False),
     ("3 = 5", False),
     ("\"s\" = obj.prop", False)
 ]
