@@ -8,21 +8,21 @@
   - Wynik działania programu:
     - Poprawny kod: wypisanie drzewa z tokenami i regułami oraz zapisanie przetworzonego kodu w pliku wynikowym
     - Niepoprawny kod: wypisanie komunikatu błędu wraz ze wskazaniem błędnego fragmentu kodu
-  - Język implementacji: **Python**
-  - Generator skanera/parsera: **Lark**
+  - Język implementacji: **Python 3.13.0**
+  - Generator skanera/parsera: **Lark** (1.2.2)
 
 - [Tokeny](https://github.com/Codefident/metody_kompilacji_projekt/blob/main/tokens.md)
 - Gramatyka
   - Format: **EBNF**
   - [Link do gramatyki](https://github.com/Codefident/metody_kompilacji_projekt/blob/main/python_grammar.lark)
 
-- Generator skanera/parsera: **Lark**
+- Generator skanera/parsera: **Lark** (1.2.2)
 
 - Generator kodu: dostosowany do gramatyki **Transformer** pochodzący z biblioteki **Lark**
 
 ## Dodatkowe informacje
 
-Generator kodu na początku pliku wynikowego dodaje napisane w *Javascript* funkcje `range()` oraz `len()` działające analogicznie do tych w *Python*.
+Generator jest w stanie przekształcić instrukcję `for i in range(2, 10, 2)` na *for* w stylu *C++* a więc `for (let i = 2, i < 10, i += 2)`. Mimo to na początku pliku wynikowego generator dodaje napisane w *Javascript* funkcje `range()` oraz `len()` działające analogicznie do tych w *Python*. Można je zobaczyć w jednym z przykładów poniżej.
 
 ## Instrukcja instalacji i użycia programu
 
@@ -60,12 +60,14 @@ start
           atom
             list_expr
   for_stmt
+    for
     i
+    in
     expr
       atom_expr
         func_call
           atom_expr
-            atom        range  
+            atom        range
           arguments
             expr        5
     block
@@ -84,7 +86,9 @@ start
                     atom        i
                 expr    3
   for_stmt
+    for
     elem
+    in
     expr
       atom_expr
         atom    my_list
