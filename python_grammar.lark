@@ -13,7 +13,7 @@ assign: assign_target ASSIGN expr
 
 assign_target: NAME | dot_access | index_access
 
-!augassign_op: ADD_ASSIGN -> aug_add
+augassign_op: ADD_ASSIGN -> aug_add
     | SUB_ASSIGN -> aug_sub
     | MUL_ASSIGN -> aug_mul
     | DIV_ASSIGN -> aug_div

@@ -39,7 +39,10 @@ let len = (obj) => {
         return f"{self.functions}\n{'\n'.join(items)}"
 
     def simple_stmt(self, items):
-        return "; ".join(items) + ";"
+        for i in range(len(items)):
+            if items[i] is None:
+                items[i] = ""
+        return "".join(items) + ";"
     
 
     # assignments (with augassigns)
@@ -48,35 +51,34 @@ let len = (obj) => {
         return "".join(items)
 
     def assign(self, items):
-        print(f"assign: {items}")
-        var_name, operator, value = items
+        var_name, _, value = items
         let = ""
         if var_name not in self.declared_vars and re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", var_name):
             self.declared_vars.add(var_name)
             let = "let "
-        return f"{let}{var_name} = {value};"
+        return f"{let}{var_name} = {value}"
     
     def augassign(self, items):
         var_name, op, value = items
-        return f"{var_name} {op} {value};"
+        return f"{var_name} {op} {value}"
     
     def assign_target(self, items):
         return "".join(items)
 
-    def aug_add(self, _):
-        return "+="
+    def aug_add(self, items):
+        return items[0]
     
-    def aug_sub(self, _):
-        return "-="
+    def aug_sub(self, items):
+        return items[0]
     
-    def aug_mul(self, _):
-        return "*="
+    def aug_mul(self, items):
+        return items[0]
     
-    def aug_div(self, _):
-        return "/="
+    def aug_div(self, items):
+        return items[0]
     
-    def aug_mod(self, _):
-        return "%="
+    def aug_mod(self, items):
+        return items[0]
     
 
     # exprs and operators
@@ -89,15 +91,6 @@ let len = (obj) => {
     
     def atom(self, items):
         return "".join(items)
-    
-    def true_(self, _):
-        return "true"
-    
-    def false_(self, _):
-        return "false"
-    
-    def none_(self, _):
-        return "null"
     
     def obj_expr(self, items):
         return f"{{{', '.join(items)}}}"
@@ -197,6 +190,7 @@ let len = (obj) => {
         return f"if ({condition}) {{\n{body}\n}}{''.join(rest)}"
 
     def elif_(self, items):
+        print(f"elif_: {items}")
         condition, body = items
         return f" else if ({condition}) {{\n{body}\n}}"
     
@@ -424,10 +418,10 @@ let len = (obj) => {
     def ELSE(self, token):
         return token.value
     
-    def OR(self, token):
+    def OR(self, _):
         return "||"
 
-    def DEF(self, token):
+    def DEF(self, _):
         return "function"
 
     def RETURN(self, token):
@@ -439,12 +433,12 @@ let len = (obj) => {
     def CONTINUE(self, token):
         return token.value
 
-    def TRUE(self, token):
+    def TRUE(self, _):
         return "true"
 
-    def FALSE(self, token):
+    def FALSE(self, _):
         return "false"
 
-    def NONE(self, token):
+    def NONE(self, _):
         return "null"
 
