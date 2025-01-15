@@ -48,6 +48,8 @@ Generator jest w stanie przekształcić instrukcję `for i in range(2, 10, 2)` n
 - instalacja wymaganych bibliotek: `pip install -r requirements.txt`
 - użycie programu: `py main.py [ścieżka do pliku z kodem Pythona, który chcemy przetworzyć]`
 - przetworzony kod znajduje się w pliku `output.js`
+- do uruchomienia pliku wynikowego potrzebne będzie zainstalowane środowisko *Node.js*
+- uruchomienie pliku wynikowego: `node output.js`
 - testy: `py test.py`
 
 ## Przykłady
