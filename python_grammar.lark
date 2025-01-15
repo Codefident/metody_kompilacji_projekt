@@ -2,32 +2,32 @@ start: (_NEWLINE | stmt)*
 
 ?stmt: compound_stmt | simple_stmt
 
-?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
+?simple_stmt: small_stmt (SEMICOLON small_stmt)* [SEMICOLON] _NEWLINE
 ?small_stmt: (assign_stmt | flow_stmt | expr)
 
 ?compound_stmt: func_def | if_stmt | for_stmt | while_stmt
 
 assign_stmt: augassign | assign
 augassign: assign_target augassign_op expr
-assign: assign_target "=" expr
+assign: assign_target ASSIGN expr
 
 assign_target: NAME | dot_access | index_access
 
-!augassign_op: "+=" -> aug_add
-    | "-=" -> aug_sub
-    | "*=" -> aug_mul
-    | "/=" -> aug_div
-    | "%=" -> aug_mod
+!augassign_op: ADD_ASSIGN -> aug_add
+    | SUB_ASSIGN -> aug_sub
+    | MUL_ASSIGN -> aug_mul
+    | DIV_ASSIGN -> aug_div
+    | MOD_ASSIGN -> aug_mod
 
-expr: expr "+" expr   -> add
-    | expr "-" expr   -> sub
-    | expr "*" expr   -> mul
-    | expr "/" expr   -> div
-    | expr "//" expr  -> floordiv
-    | expr "%" expr   -> mod
-    | expr "**" expr  -> pow
+expr: expr ADD expr   -> add
+    | expr SUB expr   -> sub
+    | expr MUL expr   -> mul
+    | expr DIV expr   -> div
+    | expr FLOORDIV expr  -> floordiv
+    | expr MOD expr   -> mod
+    | expr POW expr   -> pow
     | NUMBER    // previously in atom, moved to expr to prevent using numbers in dot access
-    | "-" NUMBER    -> negative_number
+    | SUB NUMBER    -> negative_number
     | atom_expr
 
 atom_expr: func_call
@@ -37,70 +37,119 @@ atom_expr: func_call
 
 atom: NAME
     | STRING
-    | "(" expr ")"
-    | "True"    -> true_
-    | "False"   -> false_
-    | "None"    -> none_
+    | LPAR expr RPAR
+    | TRUE
+    | FALSE
+    | NONE
     | list_expr
     | obj_expr
     
 
 // data
-obj_expr: "{}" | "{" [obj_item ("," obj_item)*] "}"
-obj_item: "\"" NAME "\"" ":" expr
-list_expr: "[]" | "[" [expr ("," expr)*] "]"
-func_call: atom_expr "(" [arguments] ")"
-index_access: atom_expr "[" expr "]"
-dot_access: atom_expr "." NAME
+obj_expr: LBRACE [obj_item (COMMA obj_item)*] RBRACE
+obj_item: STRING COLON expr
+list_expr: LBRACK [expr (COMMA expr)*] RBRACK
+func_call: atom_expr LPAR [arguments] RPAR
+index_access: atom_expr LBRACK expr RBRACK
+dot_access: atom_expr DOT NAME
 
 // loops
-for_stmt: "for" NAME "in" expr ":" block
-while_stmt: "while" test ":" block
+for_stmt: FOR NAME IN expr COLON block
+while_stmt: WHILE test COLON block
 
 // break, continue, return
 ?flow_stmt: break_stmt | continue_stmt | return_stmt
-break_stmt: "break"
-continue_stmt: "continue"
-return_stmt: "return" [expr]
+break_stmt: BREAK
+continue_stmt: CONTINUE
+return_stmt: RETURN [expr]
 
 // if and tests
-if_stmt: "if" test ":" block elif_* [else_]
-elif_: "elif" test ":" block
-else_: "else" ":" block
+if_stmt: IF test COLON block elif_* [else_]
+elif_: ELIF test COLON block
+else_: ELSE COLON block
 
 // functions
-func_def: "def" NAME "(" [params] ")" ":" block
-params: NAME ("," NAME)*
-arguments: expr ("," expr)*
+func_def: DEF NAME LPAR [params] RPAR COLON block
+params: NAME (COMMA NAME)*
+arguments: expr (COMMA expr)*
 
-?test: or_test ("if" or_test "else" test)?
-?or_test: and_test ("or" and_test)*
-?and_test: not_test_ ("and" not_test_)*
-?not_test_: "not" not_test_ -> not_test
+?test: or_test (IF or_test ELSE test)?
+?or_test: and_test (OR and_test)*
+?and_test: not_test_ (AND not_test_)*
+?not_test_: NOT not_test_ -> not_test
          | comparison
 ?comparison: expr (comp_op expr)*
 
 !comp_op:
-    | "<"     -> lower_than
-    | ">"     -> greater_than
-    | "=="    -> equals
-    | ">="    -> greater_or_equals
-    | "<="    -> lower_or_equals
-    | "<>"    -> not_equals_legacy
-    | "!="    -> not_equals
-    | "in"    -> in_operator
-    | "not" "in" -> not_in_operator
-    | "is"    -> is_operator
-    | "is" "not" -> is_not_operator
+    | LT     -> lower_than
+    | GT     -> greater_than
+    | EQ     -> equals
+    | GE     -> greater_or_equals
+    | LE     -> lower_or_equals
+    | NE_LEGACY -> not_equals_legacy
+    | NE     -> not_equals
+    | IN     -> in_operator
+    | NOT IN -> not_in_operator
+    | IS     -> is_operator
+    | IS NOT -> is_not_operator
 
 block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
-
-NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
-NUMBER: /\d+(\.\d+)?/
-STRING: /"([^"]*)"/
-COMMENT: /#[^\n]*/
 
 %import common.WS_INLINE
 %ignore WS_INLINE
 _NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
 %declare _INDENT _DEDENT
+
+
+// Tokens for special symbols
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+NUMBER: /\d+(\.\d+)?/
+STRING: /"([^"]*)"/
+COMMENT: /#[^\n]*/
+LPAR: "("
+RPAR: ")"
+LBRACE: "{"
+RBRACE: "}"
+LBRACK: "["
+RBRACK: "]"
+COLON: ":"
+COMMA: ","
+SEMICOLON: ";"
+DOT: "."
+ASSIGN: "="
+ADD_ASSIGN: "+="
+SUB_ASSIGN: "-="
+MUL_ASSIGN: "*="
+DIV_ASSIGN: "/="
+MOD_ASSIGN: "%="
+ADD: "+"
+SUB: "-"
+MUL: "*"
+DIV: "/"
+FLOORDIV: "//"
+MOD: "%"
+POW: "**"
+LT: "<"
+GT: ">"
+EQ: "=="
+GE: ">="
+LE: "<="
+NE_LEGACY: "<>"
+NE: "!="
+IN: "in"
+NOT: "not"
+IS: "is"
+FOR: "for"
+WHILE: "while"
+IF: "if"
+ELIF: "elif"
+ELSE: "else"
+OR: "or"
+AND: "and"
+DEF: "def"
+RETURN: "return"
+BREAK: "break"
+CONTINUE: "continue"
+TRUE: "True"
+FALSE: "False"
+NONE: "None"

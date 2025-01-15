@@ -19,7 +19,7 @@ def parse_python(file_path: str):
     with open(file_path, 'r') as file:
         code = file.read()
     code += "\n"
-
+    print(repr(code))
     try:
         tree = parser.parse(code)
         print("\nTree:")

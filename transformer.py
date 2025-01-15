@@ -48,7 +48,8 @@ let len = (obj) => {
         return "".join(items)
 
     def assign(self, items):
-        var_name, value = items
+        print(f"assign: {items}")
+        var_name, operator, value = items
         let = ""
         if var_name not in self.declared_vars and re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", var_name):
             self.declared_vars.add(var_name)
@@ -114,25 +115,25 @@ let len = (obj) => {
         return f"{items[0]}.{items[1]}"
     
     def add(self, items):
-        return f"({items[0]} + {items[1]})"
+        return " ".join(items)
 
     def sub(self, items):
-        return f"({items[0]} - {items[1]})"
+        return " ".join(items)
 
     def mul(self, items):
-        return f"({items[0]} * {items[1]})"
+        return " ".join(items)
 
     def div(self, items):
-        return f"({items[0]} / {items[1]})"
+        return " ".join(items)
 
     def floordiv(self, items):
-        return f"Math.floor({items[0]} / {items[1]})"
+        return f"Math.floor({items[0]} / {items[2]})"
 
     def mod(self, items):
-        return f"({items[0]} % {items[1]})"
+        return " ".join(items)
     
     def pow(self, items):
-        return f"Math.pow({items[0]}, {items[1]})"
+        return f"Math.pow({items[0]}, {items[2]})"
     
 
     # loops and flow
@@ -295,7 +296,7 @@ let len = (obj) => {
         return "!=="
     
 
-    # other tokens
+    # tokens
 
     def NAME(self, token):
         return token.value
@@ -311,3 +312,139 @@ let len = (obj) => {
     
     def COMMENT(self, token):
         return f"//{token}"
+    
+    def LPAR(self, token):
+        return token.value
+    
+    def RPAR(self, token):
+        return token.value
+
+    def LBRACE(self, token):
+        return token.value
+
+    def RBRACE(self, token):
+        return token.value
+
+    def LBRACK(self, token):
+        return token.value
+
+    def RBRACK(self, token):
+        return token.value
+
+    def COLON(self, token):
+        return token.value
+
+    def COMMA(self, token):
+        return token.value
+
+    def DOT(self, token):
+        return token.value
+
+    def ASSIGN(self, token):
+        return token.value
+
+    def ADD_ASSIGN(self, token):
+        return token.value
+
+    def SUB_ASSIGN(self, token):
+        return token.value
+
+    def MUL_ASSIGN(self, token):
+        return token.value
+
+    def DIV_ASSIGN(self, token):
+        return token.value
+
+    def MOD_ASSIGN(self, token):
+        return token.value
+
+    def ADD(self, token):
+        return token.value
+
+    def SUB(self, token):
+        return token.value
+
+    def MUL(self, token):
+        return token.value
+
+    def DIV(self, token):
+        return token.value
+
+    def FLOORDIV(self, token):
+        return token.value
+
+    def MOD(self, token):
+        return token.value
+
+    def POW(self, token):
+        return token.value
+
+    def LT(self, token):
+        return token.value
+
+    def GT(self, token):
+        return token.value
+
+    def EQ(self, token):
+        return token.value
+
+    def GE(self, token):
+        return token.value
+
+    def LE(self, token):
+        return token.value
+
+    def NE_LEGACY(self, token):
+        return token.value
+
+    def NE(self, token):
+        return token.value
+
+    def IN(self, token):
+        return token.value
+
+    def NOT(self, token):
+        return token.value
+
+    def IS(self, token):
+        return token.value
+
+    def FOR(self, token):
+        return token.value
+
+    def WHILE(self, token):
+        return token.value
+
+    def IF(self, token):
+        return token.value
+
+    def ELIF(self, token):
+        return "else if"
+
+    def ELSE(self, token):
+        return token.value
+    
+    def OR(self, token):
+        return "||"
+
+    def DEF(self, token):
+        return "function"
+
+    def RETURN(self, token):
+        return token.value
+
+    def BREAK(self, token):
+        return token.value
+
+    def CONTINUE(self, token):
+        return token.value
+
+    def TRUE(self, token):
+        return "true"
+
+    def FALSE(self, token):
+        return "false"
+
+    def NONE(self, token):
+        return "null"
+
