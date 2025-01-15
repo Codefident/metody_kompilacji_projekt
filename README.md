@@ -20,6 +20,25 @@
 
 - Generator kodu: dostosowany do gramatyki **Transformer** pochodzący z biblioteki **Lark**
 
+## Co potrafi program
+
+Program potrafi przetworzyć podstawowe instrukcje jak:
+
+- standardowe przypisanie
+- operacje matematyczne (łącznie z `//` oraz `**`)
+- operacje matematyczne z przypisaniem (np. `+=`)
+- operacje logiczne (np. `or`)
+- pętle `while` oraz `for` (lista, słownik, range)
+- keywoardy takie jak `break` czy `continue`
+- definicje i wywołanie funkcji wraz z argumentami
+- deklaracje list i słowników
+- notacje `słownik["atrybut"]`
+- notacje `lista[0]`
+- dodawanie do listy `lista.append(element)`
+- konwersja na *int* oraz *float*: `int()`, `float()`
+- `len()`
+- `print()`
+
 ## Dodatkowe informacje
 
 Generator jest w stanie przekształcić instrukcję `for i in range(2, 10, 2)` na *for* w stylu *C++* a więc `for (let i = 2, i < 10, i += 2)`. Mimo to na początku pliku wynikowego generator dodaje napisane w *Javascript* funkcje `range()` oraz `len()` działające analogicznie do tych w *Python*. Można je zobaczyć w jednym z przykładów poniżej.
