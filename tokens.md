@@ -1,9 +1,29 @@
-# Tokeny #
+# Tokeny
 
-- NAME: `/[a-zA-Z_][a-zA-Z0-9_]*/`
+- TRUE: `"True"`  
+- FALSE: `"False"`
+- NONE: `"None"`  
+- FOR: `"for"`
+- WHILE: `"while"`
+- IN: `"in"`
+- BREAK: `"break"`
+- CONTINUE: `"continue"`
+- RETURN: `"return"`
+- IF: `"if"`
+- ELSE: `"else"`
+- ELIF: `"elif"`
+- OR: `"or"`
+- AND: `"and"`
+- IS: `"is"`
+- NOT: `"not"`
+- DEF: `"def"`
+- NAME: `/(?!(break|continue|return|if|else|elif|for|while|in|not|and|or|is|def|True|False|None)[a-zA-Z_][a-zA-Z0-9_]*/`
 - NUMBER: `/\d+(\.\d+)?/`
 - STRING: `/"([^"]*)"/`
 - COMMENT: `/#[^\n]*/`
+
+## Pozostałe symbole używane w gramatyce
+
 - `(`
 - `)`
 - `{`
@@ -34,20 +54,3 @@
 - `<=`
 - `<>`
 - `!=`
-- `in`
-- `not`
-- `is`
-- `for`
-- `while`
-- `if`
-- `elif`
-- `else`
-- `or`
-- `and`
-- `def`
-- `return`
-- `break`
-- `continue`
-- `True`
-- `False`
-- `None`

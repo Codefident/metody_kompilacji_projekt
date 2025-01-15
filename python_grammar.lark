@@ -38,9 +38,9 @@ atom_expr: func_call
 atom: NAME
     | STRING
     | "(" expr ")"
-    | "True"    -> true_
-    | "False"   -> false_
-    | "None"    -> none_
+    | TRUE
+    | FALSE
+    | NONE
     | list_expr
     | obj_expr
     
@@ -54,29 +54,29 @@ index_access: atom_expr "[" expr "]"
 dot_access: atom_expr "." NAME
 
 // loops
-for_stmt: "for" NAME "in" expr ":" block
-while_stmt: "while" test ":" block
+for_stmt: FOR NAME IN expr ":" block
+while_stmt: WHILE test ":" block
 
 // break, continue, return
 ?flow_stmt: break_stmt | continue_stmt | return_stmt
-break_stmt: "break"
-continue_stmt: "continue"
-return_stmt: "return" [expr]
+break_stmt: BREAK
+continue_stmt: CONTINUE
+return_stmt: RETURN [expr]
 
 // if and tests
-if_stmt: "if" test ":" block elif_* [else_]
-elif_: "elif" test ":" block
-else_: "else" ":" block
+if_stmt: IF test ":" block elif_* [else_]
+elif_: ELIF test ":" block
+else_: ELSE ":" block
 
 // functions
-func_def: "def" NAME "(" [params] ")" ":" block
+func_def: DEF NAME "(" [params] ")" ":" block
 params: NAME ("," NAME)*
 arguments: expr ("," expr)*
 
-?test: or_test ("if" or_test "else" test)?
-?or_test: and_test ("or" and_test)*
-?and_test: not_test_ ("and" not_test_)*
-?not_test_: "not" not_test_ -> not_test
+?test: or_test (IF or_test ELSE test)?
+?or_test: and_test (OR and_test)*
+?and_test: not_test_ (AND not_test_)*
+?not_test_: NOT not_test_ -> not_test
          | comparison
 ?comparison: expr (comp_op expr)*
 
@@ -88,14 +88,33 @@ arguments: expr ("," expr)*
     | "<="    -> lower_or_equals
     | "<>"    -> not_equals_legacy
     | "!="    -> not_equals
-    | "in"    -> in_operator
-    | "not" "in" -> not_in_operator
-    | "is"    -> is_operator
-    | "is" "not" -> is_not_operator
+    | IN    -> in_operator
+    | NOT IN -> not_in_operator
+    | IS    -> is_operator
+    | IS NOT -> is_not_operator
 
 block: simple_stmt | _NEWLINE _INDENT stmt+ _DEDENT
 
-NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+
+// tokens
+TRUE: "True"
+FALSE: "False"
+NONE: "None"
+FOR: "for"
+WHILE: "while"
+IN: "in"
+BREAK: "break"
+CONTINUE: "continue"
+RETURN: "return"
+IF: "if"
+ELSE: "else"
+ELIF: "elif"
+OR: "or"
+AND: "and"
+IS: "is"
+NOT: "not"
+DEF: "def"
+NAME: /(?!(break|continue|return|if|else|elif|for|while|in|not|and|or|is|def|True|False|None)\b)[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+(\.\d+)?/
 STRING: /"([^"]*)"/
 COMMENT: /#[^\n]*/

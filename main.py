@@ -4,7 +4,7 @@ from transformer import Py_JS_Transformer
 from colorama import Fore, Style
 
 
-input_file_path = "examples/is_prime.py"
+input_file_path = "examples/algo/is_prime.py"
 if len(sys.argv) > 1:
     input_file_path = sys.argv[1]
 

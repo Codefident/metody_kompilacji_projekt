@@ -16,6 +16,7 @@ test_cases = [
     ("[1, 2, 3]", True),
     ("obj.property", True),
     ("obj.property = 12", True),
+    ("is_true = True", True),
     ("obj[\"prop\"]", True),
     ("obj[\"prop\"] = \"some_str\"", True),
     ("array[0]", True),
@@ -26,6 +27,7 @@ test_cases = [
     ("def my_function(a, b): return a + b", True),
     ("for elem in arr: print(elem)", True),
     ("for i in range(len(arr)): arr[i] = i", True),
+    ("if \"a\" in s: print(sth)", True),
 
     # negative
     ("10.method()", False),
@@ -39,6 +41,8 @@ test_cases = [
     ("func(,)", False),
     ("break = 3", False),
     ("True = \"prawda\"", False),
+    ("end_here = break", False),
+    ("cont = continue", False),
     ("3 = 5", False),
     ("\"s\" = obj.prop", False)
 ]

@@ -89,15 +89,6 @@ let len = (obj) => {
     def atom(self, items):
         return "".join(items)
     
-    def true_(self, _):
-        return "true"
-    
-    def false_(self, _):
-        return "false"
-    
-    def none_(self, _):
-        return "null"
-    
     def obj_expr(self, items):
         return f"{{{', '.join(items)}}}"
     
@@ -138,7 +129,7 @@ let len = (obj) => {
     # loops and flow
 
     def for_stmt(self, items):
-        var_name, iterable, body = items
+        _, var_name, _, iterable, body = items
         if "range(" == iterable[:6]:
             args = iterable[6:-1].split(",")
             args = [arg.strip() for arg in args]
@@ -164,23 +155,23 @@ let len = (obj) => {
         return f"for (let {var_name} of {iterable}) {{\n{body}\n}}"
 
     def while_stmt(self, items):
-        condition, body = items
+        _, condition, body = items
         return f"while ({condition}) {{\n{body}\n}}"
 
-    def break_stmt(self, _):
-        return "break;"
+    def break_stmt(self, items):
+        return f"{items[0]};"
 
-    def continue_stmt(self, _):
-        return "continue;"
+    def continue_stmt(self, items):
+        return f"{items[0]};"
 
     def return_stmt(self, items):
-        return f"return {items[0] if items else ''};"
+        return f"{' '.join(items)};"
     
 
     # ifs and tests
 
     def if_stmt(self, items):
-        condition, body, *rest = items
+        _, condition, body, *rest = items
 
         for i in range(len(rest)):
             if rest[i] is None:
@@ -196,26 +187,26 @@ let len = (obj) => {
         return f"if ({condition}) {{\n{body}\n}}{''.join(rest)}"
 
     def elif_(self, items):
-        condition, body = items
+        _, condition, body = items
         return f" else if ({condition}) {{\n{body}\n}}"
     
     def else_(self, items):
-        return f" else {{\n{''.join(items)}\n}}"
+        return f" else {{\n{''.join(items[1:])}\n}}"
     
     def or_test(self, items):
-        return f"{items[0]} || {items[1]}"
+        return " ".join(items)
     
     def and_test(self, items):
-        return f"{items[0]} && {items[1]}"
+        return " ".join(items)
     
-    def not_test(self, items):
+    def not_test_(self, items):
         return f"!{''.join(items)}"
 
 
     # functions
 
     def func_def(self, items):
-        func_name, params, body = items
+        _, func_name, params, body = items
         if params is None:
             params = []
         return f"let {func_name} = ({', '.join(params)}) => {{\n{body}\n}}"
@@ -285,7 +276,7 @@ let len = (obj) => {
     def in_operator(self, _):
         return "includes"
 
-    def not_in_operator(self, _):
+    def not_in_operator(self, items):
         return "!includes"
 
     def is_operator(self, _):
@@ -296,6 +287,57 @@ let len = (obj) => {
     
 
     # other tokens
+
+    def TRUE(self, _):
+        return "true"
+    
+    def FALSE(self, _):
+        return "false"
+    
+    def NONE(self, _):
+        return "null"
+    
+    def FOR(self, token):
+        return token.value
+    
+    def WHILE(self, token):
+        return token.value
+    
+    def IN(self, token):
+        return token.value
+    
+    def BREAK(self, token):
+        return token.value
+    
+    def CONTINUE(self, token):
+        return token.value
+    
+    def RETURN(self, token):
+        return token.value
+    
+    def IF(self, token):
+        return token.value
+    
+    def ELSE(self, token):
+        return token.value
+    
+    def ELIF(self, _):
+        return "else if"
+    
+    def OR(self, _):
+        return "||"
+    
+    def AND(self, _):
+        return "&&"
+    
+    def IS(self, _):
+        return "includes"
+    
+    def NOT(self, _):
+        return "!"
+    
+    def DEF(self, _):
+        return "function"
 
     def NAME(self, token):
         return token.value
